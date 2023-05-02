@@ -1,42 +1,87 @@
-
 # Rapport
 
-**Skriv din rapport här!**
+Detta är den 4:e forken som gjorts. Uppgiften var krånglig att få till att jag fick börja om flera gånger.
+I de tidigare forks gjordes commits men när inget fungerade gjordes många små ändringar överallt vilket gjorde
+att commits glömdes bort, men också att vettiga commits vara svåra att skriva.
 
-_Du kan ta bort all text som finns sedan tidigare_.
+Denna fork är således en kombination av fungerande kod från mina tidigare forks, tillsammans med den slutgiltiga koden.
 
-## Följande grundsyn gäller dugga-svar:
+Först skapades en recyclerview i activity main, därefter skapades medlemmen "ArrayList<Mountain> mountains" med tillhörande klass.
+Därefter skapades en layout för list_mountains som beskrevs i canvas.
 
-- Ett kortfattat svar är att föredra. Svar som är längre än en sida text (skärmdumpar och programkod exkluderat) är onödigt långt.
-- Svaret skall ha minst en snutt programkod.
-- Svaret skall inkludera en kort övergripande förklarande text som redogör för vad respektive snutt programkod gör eller som svarar på annan teorifråga.
-- Svaret skall ha minst en skärmdump. Skärmdumpar skall illustrera exekvering av relevant programkod. Eventuell text i skärmdumpar måste vara läsbar.
-- I de fall detta efterfrågas, dela upp delar av ditt svar i för- och nackdelar. Dina för- respektive nackdelar skall vara i form av punktlistor med kortare stycken (3-4 meningar).
+Efter detta gavs appen permission till internet och recyclerViewAdapter skapades.
 
-Programkod ska se ut som exemplet nedan. Koden måste vara korrekt indenterad då den blir lättare att läsa vilket gör det lättare att hitta syntaktiska fel.
+För att förstå var datan lagras (json):
+(https://developer.android.com/reference/android/os/AsyncTask)
+
+För att förstå hur adapter ska sättas upp.
+(https://developer.android.com/develop/ui/views/layout/recyclerview#java)
+(https://guides.codepath.com/android/using-the-recyclerview)
+(canvas)
+
+Adapter sattes upp enligt den sista länken med en intern viewholder.
 
 ```
-function errorCallback(error) {
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            // Geolocation API stöds inte, gör något
-            break;
-        case error.POSITION_UNAVAILABLE:
-            // Misslyckat positionsanrop, gör något
-            break;
-        case error.UNKNOWN_ERROR:
-            // Okänt fel, gör något
-            break;
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
+
+    private List<Mountain> mountains;
+
+    public RecyclerViewAdapter(List<Mountain> mountains) {
+        this.mountains = mountains;
     }
-}
+
+    // Provide a direct reference to each of the views within a data item
+    // Used to cache the views within the item layout for fast access
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        // Your holder should contain a member variable
+        // for any view that will be set as you render a row
+
+        public TextView name;
+
+
+
+        // We also create a constructor that accepts the entire item row
+        // and does the view lookups to find each subview
+        public ViewHolder(View itemView) {
+
+            // Stores the itemView in a public final member variable that can be used
+            // to access the context from any ViewHolder instance.
+            super(itemView);
+            name = itemView.findViewById(R.id.title);
+
+        }
+    }
+
 ```
 
-Bilder läggs i samma mapp som markdown-filen.
+Enligt tips från uppgiften kördes sedan toString i mountain-klassen.
 
-![](android.png)
+I main används nedan kod för att köra jsonTask på url:en och att adaptern ska populera i recyclerViewID.
 
-Läs gärna:
+```
+        new JsonTask(this).execute(JSON_URL);
 
-- Boulos, M.N.K., Warren, J., Gong, J. & Yue, P. (2010) Web GIS in practice VIII: HTML5 and the canvas element for interactive online mapping. International journal of health geographics 9, 14. Shin, Y. &
-- Wunsche, B.C. (2013) A smartphone-based golf simulation exercise game for supporting arthritis patients. 2013 28th International Conference of Image and Vision Computing New Zealand (IVCNZ), IEEE, pp. 459–464.
-- Wohlin, C., Runeson, P., Höst, M., Ohlsson, M.C., Regnell, B., Wesslén, A. (2012) Experimentation in Software Engineering, Berlin, Heidelberg: Springer Berlin Heidelberg.
+        // Lookup the recyclerview in activity layout
+        recyclerView = findViewById(R.id.recyclerViewID);
+        mountains = new ArrayList<Mountain>();
+        
+        // Create adapter passing in the sample user data
+        mountainAdapter = new RecyclerViewAdapter(mountains);
+        
+        // Attach the adapter to the recyclerview to populate items
+        recyclerView.setAdapter(mountainAdapter);
+        
+        // Set layout manager to position the items
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+```
+
+i onPostExecute körs följande för att parsa json
+(https://www.javacodeexamples.com/gson-convert-json-to-a-typed-arraylist/14925)
+
+```
+ArrayList<Mountain> data = new Gson().fromJson(json, new TypeToken<ArrayList<Mountain>>(){}.getType());
+mountains.addAll(data);
+```
+
+Screenshot där namnen presenteras.
+![mountains_screen](Screen_mountains.png)
