@@ -10,4 +10,10 @@ public class Mountain {
     }
 
     private String name;
+
+    public String toString() {
+
+        return "[" + this.getName() + ", ";
+    }
+
 }
